@@ -1,6 +1,5 @@
 from random import randint
 import pygame as pg
-import sys
 
 from settings import MINI_MAP_SCALE, MAP_SIZE_X, MAP_SIZE_Y, MAP_COMPLEXITY
 
@@ -18,8 +17,9 @@ mini_map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
 
+
 class Map:
-    def __init__(self, game, mini_map = None) -> None:
+    def __init__(self, game, mini_map=None) -> None:
         self.border_id = 1
         self.wall_id = 2
         self.game = game
@@ -30,11 +30,12 @@ class Map:
         self.world_map = {}
         self.get_map()
 
-    def generate_map(self, map_size_x, map_size_y, walls = 2):
+    def generate_map(self, map_size_x, map_size_y, walls=2):
         walls = min(walls, (min(map_size_x, map_size_y) // 7))
         mini_map = [[1] + [_] * (map_size_x - 2) + [1] for x in range(map_size_y)]
         mini_map[0] = mini_map[map_size_y - 1] = [1] * map_size_x
-
+        if walls == 0:
+            return mini_map
         x_segment = map_size_x // walls
         y_segment = map_size_y // walls
 
@@ -46,7 +47,6 @@ class Map:
 
             wall_y = randint(3, y_segment - 3) + wall * y_segment
             walls_y.append(wall_y if wall_y < map_size_y - 3 else map_size_y - 4)
-
 
         for row in walls_y:
             mini_map[row] = [val if val else self.wall_id for col, val in enumerate(mini_map[row])]
@@ -60,8 +60,6 @@ class Map:
             mini_map[row][randint(last_seg + 1, map_size_y - 2)] = _
             mini_map[row][randint(last_seg + 1, map_size_y - 2)] = _
             mini_map[row][randint(last_seg + 1, map_size_y - 2)] = _
-
-
 
         for col in walls_x:
             for row, map_row in enumerate(mini_map):
@@ -79,7 +77,6 @@ class Map:
 
         self.print_map(mini_map)
 
-
         return mini_map
 
     def get_map(self):
@@ -88,14 +85,14 @@ class Map:
                 if value:
                     self.world_map[i, j] = value
 
-    def print_map(self, mini_map = False):
+    def print_map(self, mini_map=False):
         if not mini_map:
             mini_map = self.mini_map
 
         for row in mini_map:
             print(''.join(['x' if c else ' ' for c in row]))
 
-    def get_random_free_tile(self, offset_x = 0.5, offset_y = 0.5):
+    def get_random_free_tile(self, offset_x=0.5, offset_y=0.5):
         while True:
             col = randint(1, len(self.mini_map[0]) - 2)
             row = randint(1, len(self.mini_map) - 2)
@@ -103,8 +100,10 @@ class Map:
                 break
         return col + offset_x, row + offset_y
 
-
     def draw(self):
-        [pg.draw.rect(self.game.screen, 'gray',
-            (pos[0] * MINI_MAP_SCALE, pos[1] * MINI_MAP_SCALE, MINI_MAP_SCALE, MINI_MAP_SCALE), 2)
-         for pos in self.world_map]
+        if self.game.mini_map_enabled:
+            for pos in self.world_map:
+                pg.draw.rect(
+                    self.game.screen, 'gray',
+                    (pos[0] * MINI_MAP_SCALE, pos[1] * MINI_MAP_SCALE, MINI_MAP_SCALE, MINI_MAP_SCALE),
+                    2)

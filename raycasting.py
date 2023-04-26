@@ -1,7 +1,7 @@
 import pygame as pg
 import math
-from functools import wraps
-from settings import *
+import settings
+
 
 class RayCasting:
     def __init__(self, game) -> None:
@@ -12,20 +12,20 @@ class RayCasting:
         for ray, values in enumerate(self.ray_casting_result):
             depth, proj_height, texture, offset = values
 
-            if proj_height < HEIGHT:
+            if proj_height < settings.HEIGHT:
                 wall_column = self.textures[texture].subsurface(
-                    offset * (TEXTURE_SIZE - SCALE), 0, SCALE, TEXTURE_SIZE
+                    offset * (settings.TEXTURE_SIZE - settings.SCALE), 0, settings.SCALE, settings.TEXTURE_SIZE
                 )
-                wall_column = pg.transform.scale(wall_column, (SCALE, proj_height))
-                wall_pos = (ray * SCALE, HALF_HEIGHT - proj_height // 2)
+                wall_column = pg.transform.scale(wall_column, (settings.SCALE, proj_height))
+                wall_pos = (ray * settings.SCALE, settings.HALF_HEIGHT - proj_height // 2)
             else:
-                texture_height = TEXTURE_SIZE * HEIGHT / proj_height
+                texture_height = settings.TEXTURE_SIZE * settings.HEIGHT / proj_height
                 wall_column = self.textures[texture].subsurface(
-                    offset * (TEXTURE_SIZE - SCALE), HALF_TEXTURE_SIZE - texture_height // 2,
-                    SCALE, texture_height
+                    offset * (settings.TEXTURE_SIZE - settings.SCALE), settings.HALF_TEXTURE_SIZE - texture_height // 2,
+                    settings.SCALE, texture_height
                 )
-                wall_column = pg.transform.scale(wall_column, (SCALE, HEIGHT))
-                wall_pos = (ray * SCALE, 0)
+                wall_column = pg.transform.scale(wall_column, (settings.SCALE, settings.HEIGHT))
+                wall_pos = (ray * settings.SCALE, 0)
 
             self.objects_to_render.append((depth, wall_column, wall_pos))
 
@@ -37,19 +37,19 @@ class RayCasting:
         self.objects_to_render = []
         self.textures = self.game.object_renderer.textures
 
-        ray_angle = self.game.player.angle - HALF_FOV + 0.0001
-        for ray in range(NUM_RAYS):
+        ray_angle = self.game.player.angle - settings.HALF_FOV + 0.0001
+        for ray in range(settings.NUM_RAYS):
             sin_a = math.sin(ray_angle)
             cos_a = math.cos(ray_angle)
 
             # horiz
-            y_hor, dy = (y_map +1, 1) if sin_a > 0 else (y_map -1e-6, -1)
+            y_hor, dy = (y_map + 1, 1) if sin_a > 0 else (y_map - 1e-6, -1)
             depth_hor = (y_hor - oy) / sin_a
             x_hor = ox + depth_hor * cos_a
             delta_depth = dy / sin_a
             dx = delta_depth * cos_a
 
-            for i in range(MAX_DEPTH):
+            for i in range(settings.MAX_DEPTH):
                 tile_hor = int(x_hor), int(y_hor)
                 if tile_hor in self.game.map.world_map:
                     texture_hor = self.game.map.world_map[tile_hor]
@@ -66,7 +66,7 @@ class RayCasting:
             delta_depth = dx / cos_a
             dy = delta_depth * sin_a
 
-            for i in range(MAX_DEPTH):
+            for i in range(settings.MAX_DEPTH):
                 tile_vert = int(x_vert), int(y_vert)
                 if tile_vert in self.game.map.world_map:
                     texture_vert = self.game.map.world_map[tile_vert]
@@ -87,11 +87,10 @@ class RayCasting:
 
             depth *= math.cos(self.game.player.angle - ray_angle)
 
-            proj_height = SCREEN_DIST / (depth + 0.0001)
+            proj_height = settings.SCREEN_DIST / (depth + 0.0001)
             self.ray_casting_result.append((depth, proj_height, texture, offset))
 
-            ray_angle += DELTA_ANGLE
-
+            ray_angle += settings.DELTA_ANGLE
 
     def update(self):
         self.ray_cast()

@@ -4,13 +4,11 @@ import hashlib
 import settings
 import json
 from pubnub.callbacks import SubscribeCallback
-from pubnub.enums import PNStatusCategory, PNOperationType
 from pubnub.exceptions import PubNubException
-from pubnub.pubnub_asyncio import PubNubAsyncio
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
-from opponent import *
 from dotenv import load_dotenv
+
 
 class Network:
     def __init__(self, game):
@@ -60,7 +58,6 @@ class Network:
                 if event['type'] == 'donut_update':
                     self.network.game.place_donut((event['pos_x'], event['pos_x']))
 
-
         self.listener = StatusListener(self)
 
         herenow = self.pn.here_now().channels(self.channel).sync()
@@ -78,7 +75,6 @@ class Network:
 
         self.pn.subscribe().channels(self.channel).with_presence().execute()
         self.pn.add_listener(self.listener)
-
 
     def disconnect(self):
         self.pn.remove_listener(self.listener)
@@ -118,6 +114,7 @@ class Network:
             'pos_y': y
         }
         self.metadata['donut'] = json.dumps({"x": x, "y": y})
+
         def cb(a, b):
             pass
 
@@ -132,6 +129,7 @@ class Network:
         message = {
             'type': 'score_update'
         }
+
         def cb(a, b):
             pass
 
@@ -140,7 +138,6 @@ class Network:
             self.update_meta()
         except PubNubException as e:
             print(f'except: {e}')
-
 
     def update(self):
         if (self.frame % settings.NET_UPDATE_INTERVAL == 0):

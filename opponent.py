@@ -1,4 +1,5 @@
-from sprite_object import *
+import sprite_object
+
 
 class Opponents():
     opponents = {}
@@ -10,7 +11,7 @@ class Opponents():
         self.opponents[uid] = opponent
 
     def remove(self, uid):
-        del(self.opponents[uid])
+        del self.opponents[uid]
 
     def update(self):
         for opponent in self.opponents:
@@ -33,11 +34,11 @@ class Opponent():
     uid = None
     sprite = None
 
-    def __init__(self,game, uid, pos) -> None:
+    def __init__(self, game, uid, pos) -> None:
         self.game = game
         self.uid = uid
         self.position = pos
-        self.sprite = SpriteObject(self.game, pos=pos, path='resources/sprites/dino.png', color='blue')
+        self.sprite = sprite_object.SpriteObject(self.game, pos=pos, path='resources/sprites/dino.png', color='blue')
 
     def get_position(self):
         # for now we return last real position. ideally this will calculate vectored positions

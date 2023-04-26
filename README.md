@@ -14,6 +14,8 @@ Fullscreen: `F` Key
 
 Exit: `ESC` Key
 
+Toggle minimap: `M` Key
+
 If the donut will spawn inside the walls use `P` key to respawn it
 
 If the player will spawn in the walls use `R` key to respawn

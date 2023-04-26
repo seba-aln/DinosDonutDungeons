@@ -1,6 +1,6 @@
 import pygame as pg
-from functools import wraps
-from settings import *
+import settings
+import math
 
 
 class SpriteObject:
@@ -19,12 +19,12 @@ class SpriteObject:
         self.color = color
 
     def get_sprite_projection(self):
-        proj = SCREEN_DIST / self.norm_dist * self.SPRITE_SCALE
+        proj = settings.SCREEN_DIST / self.norm_dist * self.SPRITE_SCALE
         proj_width, proj_height = proj * self.IMAGE_RATIO, proj
         image = pg.transform.scale(self.image, (proj_width, proj_height))
         self.sprite_half_width = proj_width // 2
         height_shift = proj_height * self.SPRITE_HEIGHT_SHIFT
-        pos = self.screen_x - self.sprite_half_width, HALF_HEIGHT - proj_height // 2 + height_shift
+        pos = self.screen_x - self.sprite_half_width, settings.HALF_HEIGHT - proj_height // 2 + height_shift
         self.game.raycasting.objects_to_render.append((self.norm_dist, image, pos))
 
     def get_sprite(self):
@@ -37,19 +37,21 @@ class SpriteObject:
         if (dx > 0 and self.player.angle > math.pi) or (dx < 0 and dy < 0):
             delta += math.tau
 
-        delta_rays = delta / DELTA_ANGLE
-        self.screen_x = (HALF_NUM_RAYS + delta_rays) * SCALE
+        delta_rays = delta / settings.DELTA_ANGLE
+        self.screen_x = (settings.HALF_NUM_RAYS + delta_rays) * settings.SCALE
 
         self.dist = math.hypot(dx, dy)
         self.norm_dist = self.dist * math.cos(delta)
-        if -self.IMAGE_HALF_WIDTH < self.screen_x < (WIDTH + self.IMAGE_HALF_WIDTH) and self.norm_dist > 0.5:
+        if -self.IMAGE_HALF_WIDTH < self.screen_x < (settings.WIDTH + self.IMAGE_HALF_WIDTH) and self.norm_dist > 0.5:
             self.get_sprite_projection()
 
     def update(self):
         self.get_sprite()
 
     def draw(self):
-        pg.draw.circle(self.game.screen, self.color, (self.x * MINI_MAP_SCALE, self.y * MINI_MAP_SCALE), 2)
+        if self.game.mini_map_enabled:
+            pg.draw.circle(self.game.screen, self.color,
+                           (self.x * settings.MINI_MAP_SCALE, self.y * settings.MINI_MAP_SCALE), 2)
 
     @property
     def pos(self):
