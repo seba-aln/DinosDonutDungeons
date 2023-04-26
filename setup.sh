@@ -1,10 +1,5 @@
 #!/bin/bash
 
-python3 -m venv venv
-. venv/bin/activate
-pip install -r requirements.txt
-
-
 read -p "Enter your Publish Key: " pub_key
 echo "PN_PUB_KEY=$pub_key" >> .env
 
