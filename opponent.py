@@ -38,7 +38,8 @@ class Opponent():
         self.game = game
         self.uid = uid
         self.position = pos
-        self.sprite = sprite_object.SpriteObject(self.game, pos=pos, path='resources/sprites/dino.png', color='blue')
+        self.sprite = sprite_object.SpriteObject(self.game, pos=pos, path='resources/sprites/dino.png',
+                                                 color='blue', scale=0.7)
 
     def get_position(self):
         # for now we return last real position. ideally this will calculate vectored positions
