@@ -79,6 +79,10 @@ class Player:
     def pos(self):
         return self.x, self.y
 
+    @pos.setter
+    def pos(self, pos):
+        self.x, self.y = pos
+
     @property
     def map_pos(self):
         return int(self.x), int(self.y)

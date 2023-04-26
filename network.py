@@ -25,7 +25,6 @@ class Network:
         config = PNConfiguration()
         config.subscribe_key = os.environ.get('PN_SUB_KEY')
         config.publish_key = os.environ.get('PN_PUB_KEY')
-        print(config.__dict__)
         config.user_id = self.user_id
         config.subscribe_request_timeout = 5
         self.metadata = None
@@ -46,7 +45,7 @@ class Network:
                 pass
 
             def presence(self, pubnub, presence):
-                print(f"Presence: {presence.__dict__}")
+                # print(f"Presence: {presence.__dict__}")
 
                 if presence.event == 'leave':
                     self.network.game.opponents.remove(presence.uuid)
@@ -95,9 +94,9 @@ class Network:
         print('push map and donut position to channel metadata')
 
     def get_map(self, metadata):
-        print(f'get_map:{metadata["donut"]}')
+        # print(f'get_map:{metadata["donut"]}')
         donut = json.loads(metadata['donut'])
-        print(f'get_map.donut {donut}')
+        # print(f'get_map.donut {donut}')
         self.game.place_donut((donut['x'], donut['y']))
         self.game.set_map(json.loads(metadata['map']))
         self.metadata = {
@@ -105,15 +104,14 @@ class Network:
             'donut': metadata['donut'],
             'score': metadata['score'] if 'score' in metadata else json.dumps([]),
         }
-        print(self.metadata['donut'])
+        # print(self.metadata['donut'])
         print('pull map and donut position from channel metadata')
 
     def update_meta(self):
-        print(self.metadata['donut'])
         self.pn.set_channel_metadata().channel(self.channel).custom(self.metadata).pn_async(lambda a, b: None)
 
     def update_donut(self, pos):
-        x, y = pos
+        x, y = self.game.donut.pos
         message = {
             'type': 'donut_update',
             'pos_x': x,

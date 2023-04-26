@@ -60,18 +60,23 @@ class Game:
                 sys.exit()
             if event.type == pg.KEYDOWN and event.key == pg.K_f:
                 pg.display.set_mode(RES, flags=pg.FULLSCREEN)
+            if event.type == pg.KEYDOWN and event.key == pg.K_p:
+                new_donut_pos = self.map.get_random_free_tile()
+                self.place_donut(new_donut_pos)
+                if settings.NET_ENABLE:
+                    self.network.update_donut(new_donut_pos)
+
+            if event.type == pg.KEYDOWN and event.key == pg.K_r:
+                self.player.pos = self.map.get_random_free_tile()
 
     def score(self):
         new_donut_pos = self.map.get_random_free_tile()
         self.place_donut(new_donut_pos)
-        self.network.update_donut(new_donut_pos)
-
+        if settings.NET_ENABLE:
+            self.network.update_donut(new_donut_pos)
         self.player_score += 1
 
-        print(self.player_score)
-
     def place_donut(self, pos = None):
-        print(f'place_donut()')
         if not pos:
             pos = self.map.get_random_free_tile()
         self.donut = SpriteObject(self, pos=pos)
